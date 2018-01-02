@@ -34,3 +34,26 @@ const rootRouter = new Router({
 new MonitorCtrl(rootRouter);
 app.use(rootRouter.routes()).use(rootRouter.allowedMethods());
 ```
+
+## Use auth middleware
+```js
+import {Controller, HttpMethod, route} from 'koa-decorator';
+import {Context} from 'koa';
+
+function auth(ctx) {
+  if(!ctx.auth){
+      ctx.response.status = 401;
+  }
+}
+
+@route('/monitor')
+export default class MonitorCtrl extends Controller {
+
+  @route('/alive', HttpMethod.GET,auth)
+  async alive(ctx: Context) {
+    ctx.body = {
+      data: true,
+    };
+  }
+}
+```
