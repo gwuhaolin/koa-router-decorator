@@ -1,0 +1,10 @@
+{
+  "name": "koa-router-decorator",
+  "version": "1.0.0",
+  "dependencies": {
+    "@types/koa": "^2.0.0",
+    "@types/koa-router": "^7.0.0",
+    "koa": "^2.0.0",
+    "koa-router": "^7.0.0"
+  }
+}
