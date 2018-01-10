@@ -57,3 +57,25 @@ export default class MonitorCtrl extends Controller {
   }
 }
 ```
+
+## Return data direct
+The following code has the same effect as above:
+```js
+@route('/monitor')
+export default class MonitorCtrl extends Controller {
+
+  @route('/alive', HttpMethod.GET,auth)
+  async alive(ctx: Context) {
+    return {
+      data: true,
+    };
+  }
+  
+  @route('/alive', HttpMethod.GET,auth)
+  alive(ctx: Context) {
+    return {
+      data: true,
+    };
+  }
+}
+```

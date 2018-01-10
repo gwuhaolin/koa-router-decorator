@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es2015",
     "module": "commonjs",
     "declaration": true,
     "noImplicitAny": true,
@@ -10,6 +10,9 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "strict": true,
+    "lib": [
+      "es2015"
+    ],
     "typeRoots": [
       "node_modules/@types/"
     ]
