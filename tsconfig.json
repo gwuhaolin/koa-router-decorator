@@ -8,7 +8,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "experimentalDecorators": true,
-    "importHelpers": true,
     "strict": true,
     "lib": [
       "es2015"
