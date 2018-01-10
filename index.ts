@@ -44,9 +44,11 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
         const ret = descriptor.value(ctx);
         if (ret != null) {
           Promise.resolve(ret).then(function (data: any) {
-            ctx.body = {
-              data: data,
-            };
+            if (data != null) {
+              ctx.body = {
+                data: data,
+              };
+            }
           }).catch(function (err) {
             if (err) {
               const {code = 500, msg = String(err), data} = err;
