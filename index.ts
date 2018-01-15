@@ -40,16 +40,17 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
       if (!target.router) {
         target.router = new Router();
       }
-      const handleReturnMiddleware = function (ctx: Context) {
+      const handleReturnMiddleware = async function (ctx: Context) {
         const ret = descriptor.value(ctx);
         if (ret != null) {
-          Promise.resolve(ret).then(function (data: any) {
+          try {
+            const data = await Promise.resolve(ret);
             if (data != null) {
               ctx.body = {
                 data: data,
               };
             }
-          }).catch(function (err) {
+          } catch (err) {
             if (err) {
               const {code = 500, msg = String(err), data} = err;
               ctx.body = {
@@ -61,7 +62,7 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
                 console.trace(err);
               }
             }
-          })
+          }
         }
       };
       // Decorator applied to member (method or property).
