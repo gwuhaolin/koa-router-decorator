@@ -57,6 +57,9 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
                 msg,
                 data,
               };
+              if (process.env.NODE_ENV != 'production') {
+                console.trace(err);
+              }
             }
           })
         }
