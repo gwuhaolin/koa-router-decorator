@@ -1,5 +1,6 @@
 import {Context, Middleware} from 'koa';
 import * as Router from 'koa-router';
+import * as fs from 'fs';
 
 export enum HttpMethod {
   HEAD,
@@ -11,59 +12,73 @@ export enum HttpMethod {
   DELETE
 }
 
-export abstract class Controller {
-  router: Router;
+function getFiles(dir: string, files_?: string[]): string[] {
+  files_ = files_ || [];
+  const files = fs.readdirSync(dir);
+  for (let i in files) {
+    const name = dir + '/' + files[i];
+    if (fs.statSync(name).isDirectory()) {
+      getFiles(name, files_);
+    } else {
+      files_.push(name);
+    }
+  }
+  return files_;
+}
 
-  /**
-   * 把当前 Controller 挂载到 rootRouter
-   */
-  constructor(rootRouter: Router) {
-    rootRouter.use(this.router.routes(), this.router.allowedMethods());
+/**
+ * 格式化返回数据的格式
+ */
+async function formatResponse(descriptor: any, ctx: Context) {
+  const ret = descriptor.value.call(ctx, Object.assign({}, (ctx.request as any).body, ctx.query));
+  if (ret != null) {
+    try {
+      const data = await Promise.resolve(ret);
+      if (data != null) {
+        // 正常格式
+        ctx.body = {
+          data: data,
+        };
+      }
+    } catch (err) {
+      if (err) {
+        const {code = 500, msg = String(err), data} = err;
+        // 错误格式
+        ctx.body = {
+          code,
+          msg,
+          data,
+        };
+        // 非线上环境记录错误
+        if (process.env.NODE_ENV != 'production') {
+          console.trace(err);
+        }
+      }
+    }
   }
 }
 
-// decorator factory
+const router = new Router();
+
+// @router 装饰器
 export function route(path: string, method?: HttpMethod, ...middleware: Array<Middleware>) {
-  return (target: Controller | Function, key?: string | symbol, descriptor?: any): void => {
+  return (target: any, key?: string | symbol, descriptor?: any): void => {
     // Decorator applied to Class (for Constructor injection).
     if (typeof target === 'function' && key === undefined && descriptor === undefined) {
       if (!target.prototype.router) {
         target.prototype.router = new Router();
       }
-      target.prototype.constructor = () => target.prototype.router;
-      target.prototype.router.prefix(path);
       if (middleware.length > 0) {
         target.prototype.router.use(...middleware);
       }
+      router.use(path, target.prototype.router.routes(), target.prototype.router.allowedMethods());
       return;
     } else if (typeof target === 'object') {
       if (!target.router) {
         target.router = new Router();
       }
       const handleReturnMiddleware = async function (ctx: Context) {
-        const ret = descriptor.value(ctx);
-        if (ret != null) {
-          try {
-            const data = await Promise.resolve(ret);
-            if (data != null) {
-              ctx.body = {
-                data: data,
-              };
-            }
-          } catch (err) {
-            if (err) {
-              const {code = 500, msg = String(err), data} = err;
-              ctx.body = {
-                code,
-                msg,
-                data,
-              };
-              if (process.env.NODE_ENV != 'production') {
-                console.trace(err);
-              }
-            }
-          }
-        }
+        await formatResponse(descriptor, ctx);
       };
       // Decorator applied to member (method or property).
       switch (method) {
@@ -86,11 +101,22 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
           target.router.post(path, ...middleware, handleReturnMiddleware);
           break;
         case HttpMethod.DELETE:
-          target.router.delete(path, ...middleware, handleReturnMiddleware);
+          target.router.del(path, ...middleware, handleReturnMiddleware);
           break;
         default:
-          throw new Error('@route decorator "method" is not valid');
+          target.router.all(path, ...middleware, handleReturnMiddleware);
+          break;
       }
     }
   };
+}
+
+// 加载所有controller文件
+export function load(controllersDir: string): Router {
+  getFiles(controllersDir).forEach((file) => {
+    if (file.endsWith('.js')) {
+      require(file);
+    }
+  });
+  return router;
 }

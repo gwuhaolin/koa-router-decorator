@@ -8,15 +8,15 @@ npm i koa-decorator
 ```
 then use in code:
 ```js
-import {Controller, HttpMethod, route} from 'koa-decorator';
-import {Context} from 'koa';
+import {HttpMethod, route} from 'koa-decorator';
 
 @route('/monitor')
-export default class MonitorCtrl extends Controller {
+export default class MonitorCtrl{
 
   @route('/alive', HttpMethod.GET)
-  async alive(ctx: Context) {
-    ctx.body = {
+  async alive() {
+    // this === ctx
+    this.body = {
       data: true,
     };
   }
@@ -24,20 +24,14 @@ export default class MonitorCtrl extends Controller {
 ```
 register to router:
 ```js
-import * as Router from 'koa-router';
-import MonitorCtrl from './monitor';
-
-const rootRouter = new Router({
-  prefix: '/api'
-});
-
-new MonitorCtrl(rootRouter);
-app.use(rootRouter.routes()).use(rootRouter.allowedMethods());
+import {load} from 'koa-decorator';
+const apiRouter = load(path.resolve(__dirname, 'route'));
+app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
 ```
 
 ## Use auth middleware
 ```js
-import {Controller, HttpMethod, route} from 'koa-decorator';
+import {HttpMethod, route} from 'koa-decorator';
 import {Context} from 'koa';
 
 function auth(ctx) {
@@ -47,11 +41,11 @@ function auth(ctx) {
 }
 
 @route('/monitor')
-export default class MonitorCtrl extends Controller {
+export default class MonitorCtrl {
 
   @route('/alive', HttpMethod.GET,auth)
-  async alive(ctx: Context) {
-    ctx.body = {
+  async alive() {
+    this.body = {
       data: true,
     };
   }
@@ -62,20 +56,19 @@ export default class MonitorCtrl extends Controller {
 The following code has the same effect as above:
 ```js
 @route('/monitor')
-export default class MonitorCtrl extends Controller {
+export default class MonitorCtrl {
 
   @route('/alive', HttpMethod.GET,auth)
-  async alive(ctx: Context) {
+  async alive() {
     return {
       data: true,
     };
   }
   
-  @route('/alive', HttpMethod.GET,auth)
-  alive(ctx: Context) {
-    return {
-      data: true,
-    };
+  @route('/echoParams', HttpMethod.GET,auth)
+  echoParams(param) {
+    // param的值就是请求的url中的query和body中解析出的参数的合并结果
+    return param;
   }
 }
 ```

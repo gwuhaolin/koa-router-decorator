@@ -7,17 +7,15 @@
     "decorator",
     "@route"
   ],
-  "version": "1.0.7",
+  "version": "1.1.0",
   "scripts": {
     "npm": "tsc"
   },
   "typings": "index",
   "dependencies": {
+    "@types/koa": "^2.0.0",
+    "@types/koa-router": "^7.0.0",
     "koa": "^2.0.0",
     "koa-router": "^7.0.0"
-  },
-  "devDependencies": {
-    "@types/koa": "^2.0.0",
-    "@types/koa-router": "^7.0.0"
   }
 }
