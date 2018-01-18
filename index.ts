@@ -30,7 +30,7 @@ function getFiles(dir: string, files_?: string[]): string[] {
  * 格式化返回数据的格式
  */
 async function formatResponse(descriptor: any, ctx: Context) {
-  const ret = descriptor.value.call(ctx, Object.assign({}, (ctx.request as any).body, ctx.query));
+  const ret = descriptor.value(ctx);
   if (ret != null) {
     try {
       const data = await Promise.resolve(ret);

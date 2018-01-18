@@ -14,9 +14,8 @@ import {HttpMethod, route} from 'koa-decorator';
 export default class MonitorCtrl{
 
   @route('/alive', HttpMethod.GET)
-  async alive() {
-    // this === ctx
-    this.body = {
+  async alive(ctx) {
+    ctx.body = {
       data: true,
     };
   }
@@ -32,7 +31,6 @@ app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
 ## Use auth middleware
 ```js
 import {HttpMethod, route} from 'koa-decorator';
-import {Context} from 'koa';
 
 function auth(ctx) {
   if(!ctx.auth){
@@ -44,8 +42,8 @@ function auth(ctx) {
 export default class MonitorCtrl {
 
   @route('/alive', HttpMethod.GET,auth)
-  async alive() {
-    this.body = {
+  async alive(ctx) {
+    ctx.body = {
       data: true,
     };
   }
@@ -63,12 +61,6 @@ export default class MonitorCtrl {
     return {
       data: true,
     };
-  }
-  
-  @route('/echoParams', HttpMethod.GET,auth)
-  echoParams(param) {
-    // param的值就是请求的url中的query和body中解析出的参数的合并结果
-    return param;
   }
 }
 ```
