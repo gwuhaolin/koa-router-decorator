@@ -24,7 +24,7 @@ export default class MonitorCtrl{
 register to router:
 ```js
 import {load} from 'koa-decorator';
-const apiRouter = load(path.resolve(__dirname, 'route'));
+const apiRouter = load(path.resolve(__dirname, 'route'), '.route.js');
 app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
 ```
 
