@@ -112,9 +112,9 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
 }
 
 // 加载所有controller文件
-export function load(controllersDir: string): Router {
+export function load(controllersDir: string, extension?: string): Router {
   getFiles(controllersDir).forEach((file) => {
-    if (file.endsWith('.js')) {
+    if (file.endsWith(extension || '.js')) {
       require(file);
     }
   });
