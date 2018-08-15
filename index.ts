@@ -118,11 +118,11 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
 /**
  * 加载所有controller文件
  * @param controllersDir 陈放所有route的文件夹路径
- * @param extension 只导入对应后缀的文件作为route
+ * @param extension 只导入对应后缀的文件作为route，默认导入所有的.js文件
  */
-export function load(controllersDir: string, extension?: string): Router {
+export function load(controllersDir: string, extension: string = '.js'): Router {
   getFiles(controllersDir).forEach((file) => {
-    if (file.endsWith(extension || '.js')) {
+    if (file.endsWith(extension)) {
       require(file);
     }
   });
