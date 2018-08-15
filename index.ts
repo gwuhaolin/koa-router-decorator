@@ -9,9 +9,13 @@ export enum HttpMethod {
   PUT,
   PATCH,
   POST,
-  DELETE
+  DELETE,
+  ALL,
 }
 
+/**
+ * 找出目录下所有的文件
+ */
 function getFiles(dir: string, files_?: string[]): string[] {
   files_ = files_ || [];
   const files = fs.readdirSync(dir);
@@ -111,7 +115,11 @@ export function route(path: string, method?: HttpMethod, ...middleware: Array<Mi
   };
 }
 
-// 加载所有controller文件
+/**
+ * 加载所有controller文件
+ * @param controllersDir 陈放所有route的文件夹路径
+ * @param extension 只导入对应后缀的文件作为route
+ */
 export function load(controllersDir: string, extension?: string): Router {
   getFiles(controllersDir).forEach((file) => {
     if (file.endsWith(extension || '.js')) {

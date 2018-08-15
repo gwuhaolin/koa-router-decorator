@@ -24,7 +24,8 @@ export default class MonitorCtrl{
 register to router:
 ```js
 import {load} from 'koa-decorator';
-const apiRouter = load(path.resolve(__dirname, 'route'), '.route.js');
+const apiRouter = load(path.resolve(__dirname, 'route'));
+// const apiRouter = load(path.resolve(__dirname, 'route', '.ts')); // only require .ts files as route
 app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
 ```
 
@@ -41,7 +42,7 @@ function auth(ctx) {
 @route('/monitor')
 export default class MonitorCtrl {
 
-  @route('/alive', HttpMethod.GET,auth)
+  @route('/alive', HttpMethod.ALL, auth)
   async alive(ctx) {
     ctx.body = {
       data: true,
@@ -56,7 +57,7 @@ The following code has the same effect as above:
 @route('/monitor')
 export default class MonitorCtrl {
 
-  @route('/alive', HttpMethod.GET,auth)
+  @route('/alive', HttpMethod.GET, auth)
   async alive() {
     return {
       data: true,
