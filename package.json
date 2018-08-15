@@ -9,7 +9,8 @@
   ],
   "version": "1.2.2",
   "scripts": {
-    "npm": "tsc"
+    "npm": "tsc",
+    "prepublishOnly": "tsc"
   },
   "typings": "index",
   "dependencies": {
