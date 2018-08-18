@@ -40,9 +40,7 @@ async function formatResponse(descriptor: any, ctx: Context) {
       const data = await Promise.resolve(ret);
       if (data != null) {
         // 正常格式
-        ctx.body = {
-          data: data,
-        };
+        ctx.body = data;
       }
     } catch (err) {
       if (err) {
@@ -53,6 +51,7 @@ async function formatResponse(descriptor: any, ctx: Context) {
           msg,
           data,
         };
+        ctx.status = 500;
         // 非线上环境记录错误
         if (process.env.NODE_ENV != 'production') {
           console.trace(err);
