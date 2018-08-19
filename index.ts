@@ -44,7 +44,7 @@ async function formatResponse(descriptor: any, ctx: Context) {
       }
     } catch (err) {
       if (err) {
-        const {code = 500, msg = String(err), data} = err;
+        const {code = err.code || 500, msg = err.message || err.msg || JSON.stringify(err), data} = err;
         // 错误格式
         ctx.body = {
           code,
